@@ -248,12 +248,19 @@
       .memory-node.left {
         align-self: flex-start;
         justify-content: flex-end;
-        padding-right: 30px;
+        padding-right: 30px; /* Reverted back to the original value */
       }
       .memory-node.right {
         align-self: flex-end;
         justify-content: flex-start;
-        padding-left: 30px;
+        padding-left: 30px; /* Reverted back to the original value */
+      }
+      /* New: specific gap just for the text labels */
+      .memory-node.left .date-label {
+        margin-right: 16px; /* Space on the left for text on the right side */
+      }
+      .memory-node.right .date-label {
+        margin-left: 16px; /* Space on the right for text on the left side */
       }
       .memory-node::before {
         content: "";
@@ -304,6 +311,49 @@
       }
 
       /* Modal View & Typewriter */
+      /* Update: Modal Media initial state (hidden via clip-path) */
+      /* Updated: Modal Media initial state */
+      .modal-media {
+        border-radius: 12px;
+        overflow: hidden;
+        display: none; /* Keep it completely hidden until text finishes */
+      }
+
+      /* New: Premium "Soft Bloom" Reveal */
+      @keyframes softBloom {
+        0% {
+          opacity: 0;
+          transform: scale(0.95) translateY(15px);
+          filter: blur(10px);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+          filter: blur(0px);
+        }
+      }
+
+      /* Applied by JS when typing finishes */
+      .modal-media.reveal-active {
+        display: block; /* Show the container */
+        margin-top: 25px; /* Add a nice gap between the typed text and the image */
+        animation: softBloom 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); /* Adds modern depth */
+      }
+
+      .modal-media img {
+        width: 100%;
+        display: block;
+        pointer-events: none;
+      }
+
+      /* New: styling for the image itself inside the container */
+      .modal-media img {
+        width: 100%;
+        display: block; /* Avoid inline spacing */
+        pointer-events: none; /* Let clicks go through to close modal */
+      }
+
       #memory-modal {
         position: fixed;
         top: 0;
@@ -337,21 +387,26 @@
       }
       .close-btn {
         position: absolute;
-        top: 15px;
-        right: 20px;
-        font-size: 1.5rem;
+        top: 15px; /* Bumped up a little more */
+        right: 12px; /* Tighter against the edge */
+        font-size: 1.2rem; /* Reduced cross mark size from 1.5rem */
         color: white;
         cursor: pointer;
         border: none;
         background: transparent;
         z-index: 10;
+        /* Redone tighter padding and shadow to make the "outline" smaller */
+        padding: 10px;
+        box-shadow: 0 0 4px rgba(255, 75, 110, 0.5); /* Tighter blur and shadow */
+        border-radius: 45px; /* Tight border-radius */
       }
       .modal-date {
         color: var(--primary-pink);
         font-size: 1.3rem;
         margin-bottom: 15px;
         border-bottom: 1px solid var(--glass-border);
-        padding-bottom: 10px;
+        padding-bottom: 18px; /* Increased to push the line down further */
+        padding-right: 30px; /* Prevents text from creeping under the close button */
       }
 
       .text-container {
@@ -451,11 +506,11 @@
       <div class="modal-content">
         <button class="close-btn" id="close-modal">&times;</button>
         <div class="modal-date" id="modal-date">Date</div>
-        <div class="modal-media" id="modal-media"></div>
         <div class="text-container">
           <div id="modal-text"></div>
           <span class="cursor" id="typing-cursor">&nbsp;</span>
         </div>
+        <div class="modal-media" id="modal-media"></div>
       </div>
     </div>
 
@@ -464,22 +519,79 @@
       const memories = [
         {
           id: 1,
-          date: "March 4th",
-          text: "Our first real milestone. I couldn't stop looking at you today. Everything just felt right.",
+          date: "March 4th 2026",
+          text: "The Beginning 🥹💗",
           media:
             "<img src='Screenshot_2026-04-16-08-35-07-131_com.whatsapp.jpg' style='width: 100%; border-radius: 10px; margin-bottom: 15px;' />",
         },
         {
+          id: 1,
+          date: "March 4th 2026",
+          text: "Onna pagawa ganna ptn gtta 😒",
+          media:
+            "<img src='Screenshot_2026-04-16-08-38-32-969_com.whatsapp.jpg' style='width: 100%; border-radius: 10px; margin-bottom: 15px;' />",
+        },
+        {
+          id: 1,
+          date: "March 5th 2026",
+          text: "First fight.. 😔💔 mage gon kama thama ithin 😬",
+          media:
+            "<img src='Screenshot_2026-04-16-08-45-19-540_com.whatsapp.jpg' style='width: 100%; border-radius: 10px; margin-bottom: 15px;' />",
+        },
+        {
+          id: 1,
+          date: "March 5th 2026",
+          text: "Your first ummmmhhhh 🥳💗",
+          media:
+            "<img src='Screenshot_2026-03-05-23-36-27-598_com.whatsapp.jpg' style='width: 100%; border-radius: 10px; margin-bottom: 15px;' />",
+        },
+        {
           id: 2,
-          date: "March 7th",
-          text: "Just a small text to say I miss you. It's crazy how much space you take up in my head now.",
+          date: "March 7th 2026",
+          text: "The day i realised that i really did meant something to you.. You kept the flower i gave you during our trip. Gosh i love you so much pnh.. 💖",
+          media:
+            "<img src='IMG-20260307-WA0034.jpg' style='width: 100%; border-radius: 10px; margin-bottom: 15px;' />",
+        },
+        {
+          id: 3,
+          date: "March 15th 2026",
+          text: "Mala samayan 😂😘",
+          media:
+            "<img src='Screenshot_2026-03-15-01-32-08-146_com.whatsapp.jpg' style='width: 100%; border-radius: 10px; margin-bottom: 15px;' />",
+        },
+        {
+          id: 3,
+          date: "March 17th 2026",
+          text: "Mage jeewithe mata hambuna lassanama birthday wish eka. 💗",
+          media:
+            "<img src='Screenshot_2026-03-17-00-05-07-620_com.whatsapp.jpg' style='width: 100%; border-radius: 10px; margin-bottom: 15px;' />",
+        },
+        {
+          id: 3,
+          date: "March 21st 2026",
+          text: "Our first date 🥳",
+          media:
+            "<img src='Screenshot_2026-04-16-10-21-44-954_com.whatsapp.jpg' style='width: 100%; border-radius: 10px; margin-bottom: 15px;' />",
+        },
+        {
+          id: 3,
+          date: "April 4th 2026",
+          text: "Apita adata masayainee pnh.. Happy one month for you and me. 🥹💕\n\nKohedoo mnda idan mage life ekata awilla mata mechchra adare krnna plwn kiyla kiyla dunne oya. Dan mta oya nathuw innama bari thrmt mn oyata adare krnw 🥹 and my love for you ain't gonna change till the end of days baby. 💗\n\nMata hamadama oyath ekka api dan innawa wage sathutin adaren inna one patiyo. Oyatath ehma one kiyla mn dannawa. 😌\n\nSo lets turn this one month to a year and then to a life time. I will take care of you baby, and i will love you forever. You are my soulmate 💝💍....",
           media: "",
         },
         {
           id: 3,
-          date: "April 4th",
-          text: "Apita adata masayainee pnh.. Happy one month for you and me. 🥹💕\n\nKohedoo mnda idan mage life ekata awilla mata mechchra adare krnna plwn kiyla kiyla dunne oya. Dan mta oya nathuw innama bari thrmt mn oyata adare krnw 🥹 and my love for you ain't gonna change till the end of days baby. 💗\n\nMata hamadama oyath ekka api dan innawa wage sathutin adaren inna one patiyo. Oyatath ehma one kiyla mn dannawa. 😌\n\nSo lets turn this one month to a year and then to a life time. I will take care of you baby, and i will love you forever. You are my soulmate 💝💍....",
-          media: "",
+          date: "April 7th 2026",
+          text: "🌚 first time.. hehee.",
+          media:
+            "<img src='Screenshot_2026-04-16-08-54-50-054_com.whatsapp.jpg' style='width: 100%; border-radius: 10px; margin-bottom: 15px;' />",
+        },
+        {
+          id: 3,
+          date: "April 14th 2026",
+          text: "Me ahinsakayata boru balaporoththu dila rawattuwane oya.. 😪😪",
+          media:
+            "<img src='Screenshot_2026-04-15-02-14-03-120_com.whatsapp.jpg' style='width: 100%; border-radius: 10px; margin-bottom: 15px;' />",
         },
       ];
 
@@ -555,6 +667,7 @@
       let currentMemoryText = "";
       let typewriterIndex = 0;
       let typewriterTimeout = null;
+      let currentMemoryMedia = ""; // Added to store media during typing
       const textElement = document.getElementById("modal-text");
       const cursorElement = document.getElementById("typing-cursor");
 
@@ -644,12 +757,25 @@
           typewriterTimeout = setTimeout(typeWriter, 80);
         } else {
           cursorElement.style.display = "none";
+
+          // Image reveal triggered after typing completes
+          const mediaContainer = document.getElementById("modal-media");
+          if (currentMemoryMedia) {
+            mediaContainer.innerHTML = currentMemoryMedia;
+            mediaContainer.classList.add("reveal-active");
+          }
         }
       }
 
       function openModal(memory) {
         document.getElementById("modal-date").textContent = memory.date;
-        document.getElementById("modal-media").innerHTML = memory.media;
+
+        // Hide media container before starting
+        currentMemoryMedia = memory.media;
+        const mediaContainer = document.getElementById("modal-media");
+        mediaContainer.innerHTML = "";
+        mediaContainer.classList.remove("reveal-active");
+
         modal.classList.add("active");
 
         // Reset and start typewriter
