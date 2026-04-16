@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Our Memories ❤️</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-pink: #ff4b6e;
+        --bg-dark: #000000;
+        --glass-bg: rgba(20, 20, 20, 0.7);
+        --glass-border: rgba(255, 75, 110, 0.2);
+      }
+
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: var(--bg-dark);
+        font-family: "Fredoka", sans-serif;
+        color: #ffffff;
+        overflow-x: hidden;
+      }
+
+      /* Background Animations (Hearts & Cat) */
+      .floating-shape {
+        position: fixed;
+        opacity: 0;
+        animation: floatUp 8s linear infinite;
+        z-index: 1;
+        pointer-events: none;
+      }
+      @keyframes floatUp {
+        0% {
+          transform: translateY(100vh) scale(0.5);
+          opacity: 0;
+        }
+        20% {
+          opacity: 0.6;
+        }
+        80% {
+          opacity: 0.6;
+        }
+        100% {
+          transform: translateY(-20vh) scale(1.2);
+          opacity: 0;
+        }
+      }
+
+      .cat-track {
+        position: fixed;
+        bottom: 5%;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        pointer-events: none;
+        z-index: 2;
+      }
+      .live-cat {
+        position: absolute;
+        height: 60px;
+        animation: scurry 12s linear infinite;
+      }
+      @keyframes scurry {
+        0% {
+          left: -20%;
+          transform: scaleX(1);
+        }
+        45% {
+          left: 110%;
+          transform: scaleX(1);
+        }
+        50% {
+          left: 110%;
+          transform: scaleX(-1);
+        }
+        95% {
+          left: -20%;
+          transform: scaleX(-1);
+        }
+        100% {
+          left: -20%;
+          transform: scaleX(1);
+        }
+      }
+
+      /* Flora Borders */
+      #flora-border {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 5;
+      }
+      .flora-element {
+        position: absolute;
+        transform: scale(0) rotate(0deg);
+        transition: transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      .grow-flora .flora-element {
+        transform: scale(1) rotate(var(--rot));
+      }
+      .grow-flora .flora-element svg {
+        animation: breathe 4s ease-in-out infinite alternate;
+        animation-delay: var(--delay);
+      }
+      @keyframes breathe {
+        0% {
+          transform: scale(0.95);
+        }
+        100% {
+          transform: scale(1.05);
+        }
+      }
+
+      /* Screens */
+      .screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition:
+          opacity 1s ease,
+          visibility 1s;
+        z-index: 10;
+      }
+      .hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      /* Screen 1: Login */
+      #login-screen {
+        z-index: 100;
+        background: var(--bg-dark);
+      }
+      .glass-panel {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        padding: 40px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        width: 80%;
+        max-width: 350px;
+        position: relative;
+        z-index: 10;
+      }
+      .glass-panel h2 {
+        margin-top: 0;
+        font-size: 1.5rem;
+        color: var(--primary-pink);
+      }
+      input[type="text"] {
+        width: 100%;
+        padding: 12px;
+        margin: 20px 0;
+        border-radius: 10px;
+        border: 1px solid var(--glass-border);
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        font-family: inherit;
+        font-size: 1.1rem;
+        text-align: center;
+        box-sizing: border-box;
+        outline: none;
+        transition: border 0.3s;
+      }
+      input[type="text"]:focus {
+        border-color: var(--primary-pink);
+      }
+      button {
+        background: var(--primary-pink);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        font-size: 1.2rem;
+        border-radius: 50px;
+        cursor: pointer;
+        font-family: inherit;
+        box-shadow: 0 0 15px rgba(255, 75, 110, 0.4);
+        transition: transform 0.2s;
+      }
+      button:active {
+        transform: scale(0.95);
+      }
+      .error-msg {
+        color: #ff4b4b;
+        font-size: 0.9rem;
+        min-height: 20px;
+        margin-top: -10px;
+        margin-bottom: 10px;
+      }
+
+      /* Screen 2: Timeline */
+      #timeline-screen {
+        justify-content: flex-start;
+        overflow-y: auto;
+        z-index: 50;
+        padding: 40px 0;
+      }
+      .timeline-container {
+        position: relative;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .timeline-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 4px;
+        background: var(--primary-pink);
+        margin-left: -2px;
+        border-radius: 2px;
+      }
+      .memory-node {
+        position: relative;
+        width: 50%;
+        margin-bottom: 40px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+      }
+      .memory-node.left {
+        align-self: flex-start;
+        justify-content: flex-end;
+        padding-right: 30px;
+      }
+      .memory-node.right {
+        align-self: flex-end;
+        justify-content: flex-start;
+        padding-left: 30px;
+      }
+      .memory-node::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        width: 30px;
+        height: 3px;
+        background: var(--primary-pink);
+      }
+      .memory-node.left::before {
+        right: 0;
+      }
+      .memory-node.right::before {
+        left: 0;
+      }
+      .dot {
+        background: var(--primary-pink);
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        box-shadow: 0 0 15px rgba(255, 75, 110, 0.6);
+        transition: transform 0.2s;
+        z-index: 2;
+      }
+      .memory-node:hover .dot {
+        transform: translateY(-50%) scale(1.1);
+      }
+      .memory-node.left .dot {
+        right: -2px;
+        transform: translate(50%, -50%);
+      }
+      .memory-node.right .dot {
+        left: -2px;
+        transform: translate(-50%, -50%);
+      }
+      .memory-node.left:hover .dot {
+        transform: translate(50%, -50%) scale(1.1);
+      }
+      .memory-node.right:hover .dot {
+        transform: translate(-50%, -50%) scale(1.1);
+      }
+      .date-label {
+        font-size: 1.1rem;
+        font-weight: 500;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+        z-index: 2;
+      }
+
+      /* Modal View & Typewriter */
+      #memory-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 200;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s;
+        backdrop-filter: blur(5px);
+      }
+      #memory-modal.active {
+        opacity: 1;
+        visibility: visible;
+      }
+      .modal-content {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        width: 85%;
+        max-width: 400px;
+        max-height: 80vh;
+        padding: 25px;
+        overflow-y: auto;
+        position: relative;
+      }
+      .close-btn {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        font-size: 1.5rem;
+        color: white;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        z-index: 10;
+      }
+      .modal-date {
+        color: var(--primary-pink);
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+        border-bottom: 1px solid var(--glass-border);
+        padding-bottom: 10px;
+      }
+
+      .text-container {
+        position: relative;
+      }
+      #modal-text {
+        font-size: 1.1rem;
+        line-height: 1.5;
+        font-weight: 400;
+        white-space: pre-wrap;
+        display: inline;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 1);
+      }
+
+      .cursor {
+        display: inline-block;
+        width: 3px;
+        background-color: var(--primary-pink);
+        animation: blink 0.8s infinite;
+        vertical-align: text-bottom;
+        margin-left: 2px;
+        box-shadow: 0 0 5px var(--primary-pink);
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+      }
+
+      .typing-particle {
+        position: fixed;
+        font-size: 16px;
+        pointer-events: none;
+        z-index: 250;
+        animation: popSpark 0.8s ease-out forwards;
+      }
+      @keyframes popSpark {
+        0% {
+          transform: translate(0, 0) scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(var(--tx), var(--ty)) scale(0);
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <audio id="bg-music" loop>
+      <source src="D:\1month\Fall-In-Love-chosic.com_.mp3" type="audio/mpeg" />
+    </audio>
+
+    <div id="flora-border"></div>
+
+    <div class="cat-track">
+      <img
+        src="https://media.tenor.com/J3B-I1903q8AAAAi/cat-running.gif"
+        class="live-cat"
+        alt="Running Cat"
+      />
+    </div>
+
+    <div id="login-screen" class="screen">
+      <div class="glass-panel">
+        <h2>What's the key to my heart?</h2>
+        <div id="error-message" class="error-msg"></div>
+        <input
+          type="text"
+          id="password-input"
+          placeholder="Answer here..."
+          autocomplete="off"
+        />
+        <button id="unlock-btn">Unlock</button>
+      </div>
+    </div>
+
+    <div id="timeline-screen" class="screen hidden">
+      <div style="text-align: center; margin-bottom: 20px; z-index: 10">
+        <h2
+          style="
+            color: var(--primary-pink);
+            text-shadow: 0 0 10px rgba(255, 75, 110, 0.5);
+          "
+        >
+          Our Journey 📖
+        </h2>
+      </div>
+      <div class="timeline-container" id="timeline-container"></div>
+    </div>
+
+    <div id="memory-modal">
+      <div class="modal-content">
+        <button class="close-btn" id="close-modal">&times;</button>
+        <div class="modal-date" id="modal-date">Date</div>
+        <div class="modal-media" id="modal-media"></div>
+        <div class="text-container">
+          <div id="modal-text"></div>
+          <span class="cursor" id="typing-cursor">&nbsp;</span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // 1. Data Structure
+      const memories = [
+        {
+          id: 1,
+          date: "March 4th",
+          text: "Our first real milestone. I couldn't stop looking at you today. Everything just felt right.",
+          media:
+            "<img src='Screenshot_2026-04-16-08-35-07-131_com.whatsapp.jpg' style='width: 100%; border-radius: 10px; margin-bottom: 15px;' />",
+        },
+        {
+          id: 2,
+          date: "March 7th",
+          text: "Just a small text to say I miss you. It's crazy how much space you take up in my head now.",
+          media: "",
+        },
+        {
+          id: 3,
+          date: "April 4th",
+          text: "Apita adata masayainee pnh.. Happy one month for you and me. 🥹💕\n\nKohedoo mnda idan mage life ekata awilla mata mechchra adare krnna plwn kiyla kiyla dunne oya. Dan mta oya nathuw innama bari thrmt mn oyata adare krnw 🥹 and my love for you ain't gonna change till the end of days baby. 💗\n\nMata hamadama oyath ekka api dan innawa wage sathutin adaren inna one patiyo. Oyatath ehma one kiyla mn dannawa. 😌\n\nSo lets turn this one month to a year and then to a life time. I will take care of you baby, and i will love you forever. You are my soulmate 💝💍....",
+          media: "",
+        },
+      ];
+
+      // 2. Visual Effects Generation (Hearts & Flora)
+      const heartTypes = ["💖", "💘", "💝", "💕", "✨"];
+      for (let i = 0; i < 12; i++) {
+        let shape = document.createElement("div");
+        shape.innerHTML =
+          heartTypes[Math.floor(Math.random() * heartTypes.length)];
+        shape.className = "floating-shape";
+        shape.style.left = Math.random() * 100 + "vw";
+        shape.style.animationDuration = Math.random() * 6 + 6 + "s";
+        shape.style.animationDelay = Math.random() * 5 + "s";
+        shape.style.fontSize = Math.random() * 15 + 15 + "px";
+        document.body.appendChild(shape);
+      }
+
+      const floraContainer = document.getElementById("flora-border");
+      const flowerColors = ["#ff9a9e", "#fecfef", "#ffb6b9", "#ffdde1"];
+
+      function spawnFlora(edge, positionPercent, isLeaf) {
+        const el = document.createElement("div");
+        el.className = "flora-element";
+        if (edge === "top") {
+          el.style.top = "-25px";
+          el.style.left = positionPercent + "vw";
+        } else if (edge === "bottom") {
+          el.style.bottom = "-25px";
+          el.style.left = positionPercent + "vw";
+        } else if (edge === "left") {
+          el.style.left = "-25px";
+          el.style.top = positionPercent + "vh";
+        } else if (edge === "right") {
+          el.style.right = "-25px";
+          el.style.top = positionPercent + "vh";
+        }
+
+        const rot = Math.random() * 360;
+        const size = isLeaf ? Math.random() * 20 + 30 : Math.random() * 30 + 40;
+        el.style.width = size + "px";
+        el.style.height = size + "px";
+        el.style.setProperty("--rot", rot + "deg");
+        el.style.setProperty("--delay", Math.random() * 2 + "s");
+        el.style.transitionDelay = Math.random() * 1.2 + "s";
+
+        if (isLeaf) {
+          el.innerHTML = `<svg viewBox="0 0 100 100" width="100%" height="100%"><path d="M10 90 C 10 10, 90 10, 90 10 C 90 90, 10 90, 10 90" fill="#a8e6cf"/><path d="M10 90 L 90 10" stroke="#87c7b0" stroke-width="4" stroke-linecap="round"/></svg>`;
+        } else {
+          const pCol =
+            flowerColors[Math.floor(Math.random() * flowerColors.length)];
+          el.innerHTML = `<svg viewBox="0 0 100 100" width="100%" height="100%"><circle cx="50" cy="25" r="25" fill="${pCol}"/><circle cx="50" cy="75" r="25" fill="${pCol}"/><circle cx="25" cy="50" r="25" fill="${pCol}"/><circle cx="75" cy="50" r="25" fill="${pCol}"/><circle cx="50" cy="50" r="15" fill="#fff59d"/></svg>`;
+        }
+        floraContainer.appendChild(el);
+      }
+
+      const itemsPerEdge = 18;
+      for (let i = 0; i < itemsPerEdge; i++) {
+        const pos = (i / itemsPerEdge) * 100 + Math.random() * 5;
+        spawnFlora("top", pos, Math.random() > 0.4);
+        spawnFlora("bottom", pos, Math.random() > 0.4);
+        spawnFlora("left", pos, Math.random() > 0.4);
+        spawnFlora("right", pos, Math.random() > 0.4);
+      }
+
+      // 3. App Logic & Elements
+      const loginScreen = document.getElementById("login-screen");
+      const timelineScreen = document.getElementById("timeline-screen");
+      const timelineContainer = document.getElementById("timeline-container");
+      const modal = document.getElementById("memory-modal");
+      const bgMusic = document.getElementById("bg-music");
+
+      // Typewriter State Variables
+      let currentMemoryText = "";
+      let typewriterIndex = 0;
+      let typewriterTimeout = null;
+      const textElement = document.getElementById("modal-text");
+      const cursorElement = document.getElementById("typing-cursor");
+
+      document
+        .getElementById("unlock-btn")
+        .addEventListener("click", attemptUnlock);
+      document
+        .getElementById("password-input")
+        .addEventListener("keypress", (e) => {
+          if (e.key === "Enter") attemptUnlock();
+        });
+
+      function attemptUnlock() {
+        if (
+          document
+            .getElementById("password-input")
+            .value.trim()
+            .toLowerCase() === "nomesha"
+        ) {
+          bgMusic.volume = 0.6;
+          bgMusic
+            .play()
+            .catch((e) => console.warn("Browser blocked audio.", e));
+
+          loginScreen.style.opacity = "0";
+          document.body.classList.add("grow-flora"); // Grow the flowers!
+
+          setTimeout(() => {
+            loginScreen.classList.add("hidden");
+            timelineScreen.classList.remove("hidden");
+            renderTimeline();
+          }, 1000);
+        } else {
+          document.getElementById("error-message").textContent =
+            "Try again, baby 😉";
+          document.getElementById("password-input").value = "";
+          document.getElementById("password-input").focus();
+        }
+      }
+
+      function renderTimeline() {
+        timelineContainer.innerHTML = "";
+        memories.forEach((memory, index) => {
+          let dotSize = Math.min(
+            16 + Math.floor(memory.text.length / 20) * 2,
+            45,
+          );
+          const sideClass = index % 2 === 0 ? "left" : "right";
+          const node = document.createElement("div");
+          node.className = `memory-node ${sideClass}`;
+          node.innerHTML = `
+                <div class="dot" style="width: ${dotSize}px; height: ${dotSize}px;"></div>
+                <div class="date-label">${memory.date}</div>
+            `;
+          node.addEventListener("click", () => openModal(memory));
+          timelineContainer.appendChild(node);
+        });
+      }
+
+      // 4. Typewriter & Particle Logic
+      function createParticle() {
+        const rect = cursorElement.getBoundingClientRect();
+        const particle = document.createElement("div");
+        particle.className = "typing-particle";
+        particle.innerHTML = Math.random() > 0.5 ? "✨" : "💖";
+        particle.style.left = rect.left - 5 + "px";
+        particle.style.top = rect.top - 5 + "px";
+        const tx = (Math.random() - 0.5) * 60;
+        const ty = (Math.random() - 0.5) * 60;
+        particle.style.setProperty("--tx", `${tx}px`);
+        particle.style.setProperty("--ty", `${ty}px`);
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 800);
+      }
+
+      function typeWriter() {
+        if (typewriterIndex < currentMemoryText.length) {
+          const char = currentMemoryText.charAt(typewriterIndex);
+          textElement.innerHTML += char;
+
+          if (char !== " " && char !== "\n") {
+            createParticle();
+          }
+
+          typewriterIndex++;
+          // Typing speed (in milliseconds)
+          typewriterTimeout = setTimeout(typeWriter, 80);
+        } else {
+          cursorElement.style.display = "none";
+        }
+      }
+
+      function openModal(memory) {
+        document.getElementById("modal-date").textContent = memory.date;
+        document.getElementById("modal-media").innerHTML = memory.media;
+        modal.classList.add("active");
+
+        // Reset and start typewriter
+        clearTimeout(typewriterTimeout);
+        currentMemoryText = memory.text;
+        typewriterIndex = 0;
+        textElement.innerHTML = "";
+        cursorElement.style.display = "inline-block";
+        typeWriter();
+      }
+
+      document.getElementById("close-modal").addEventListener("click", () => {
+        modal.classList.remove("active");
+        clearTimeout(typewriterTimeout); // Stop typing if closed early
+      });
+
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+          modal.classList.remove("active");
+          clearTimeout(typewriterTimeout);
+        }
+      });
+    </script>
+  </body>
+</html>
